@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { CartProvider } from "@/contexts/CartContext";
+import { ConfettiProvider } from "@/contexts/ConfettiContext";
 
 export const metadata: Metadata = {
   title: "Dynamic Cart with Confetti",
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <CartProvider>{children}</CartProvider>
+        <ConfettiProvider>
+          <CartProvider>{children}</CartProvider>
+        </ConfettiProvider>
       </body>
     </html>
   );

@@ -1,12 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useCart } from "@/contexts/CartContext";
+import { useConfetti } from "@/contexts/ConfettiContext";
 import { products } from "@/lib/products";
 
 export default function Cart() {
   const { items, addToCart, shouldBounce } = useCart();
+  const { triggerConfetti } = useConfetti();
   const [isDragOver, setIsDragOver] = useState(false);
+  // Ref to cart element for calculating confetti origin position
+  const cartRef = useRef<HTMLDivElement>(null);
 
   // Calculate total price
   const total = items.reduce(
@@ -40,11 +44,32 @@ export default function Cart() {
     if (product) {
       // Add to cart (this will trigger bounce via context)
       addToCart(product);
+
+      // Calculate confetti origin near the cart area
+      // If cart ref is available, use its position; otherwise use center-top
+      let confettiOrigin = { x: 0.8, y: 0.3 }; // Default: right-center-top
+
+      if (cartRef.current) {
+        const rect = cartRef.current.getBoundingClientRect();
+        const x = (rect.left + rect.width / 2) / window.innerWidth;
+        const y = (rect.top + rect.height / 2) / window.innerHeight;
+        confettiOrigin = { x, y };
+      }
+
+      // Trigger confetti explosion from near the cart
+      // The confetti system handles the animation without causing app re-renders
+      triggerConfetti({
+        origin: confettiOrigin,
+        particleCount: 100,
+        spread: 70,
+        startVelocity: 30,
+      });
     }
   };
 
   return (
     <div
+      ref={cartRef}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
