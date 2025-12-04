@@ -13,6 +13,7 @@ export type CartItem = {
 type CartContextType = {
   items: CartItem[];
   addToCart: (product: Product) => void;
+  clearCart: () => void;
   // Expose a trigger function for bounce animation
   triggerBounce: () => void;
   shouldBounce: boolean;
@@ -52,6 +53,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     triggerBounce();
   };
 
+  // Clear all items from cart
+  const clearCart = () => {
+    setItems([]);
+  };
+
   // Trigger bounce animation by toggling state
   const triggerBounce = () => {
     setShouldBounce(true);
@@ -62,7 +68,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <CartContext.Provider value={{ items, addToCart, triggerBounce, shouldBounce }}>
+    <CartContext.Provider value={{ items, addToCart, clearCart, triggerBounce, shouldBounce }}>
       {children}
     </CartContext.Provider>
   );
